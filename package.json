@@ -4,6 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "nodegit": "^0.18.3"
+    "isomorphic-fetch": "^2.2.1",
+    "nodegit": "^0.18.3",
+    "request": "^2.81.0"
   }
 }
