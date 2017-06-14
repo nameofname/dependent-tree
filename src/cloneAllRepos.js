@@ -1,6 +1,6 @@
 "use strict";
 
-require('dotenv')();
+require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
 const Git = require('nodegit');
@@ -16,18 +16,10 @@ const cloneOptions = {
     fetchOpts: {
         callbacks: {
             certificateCheck: () => 1,
-            credentials: () => NodeGit.Cred.userpassPlaintextNew(process.env.GIT_USER, GIT_PW)
+            credentials: () => NodeGit.Cred.userpassPlaintextNew(process.env.GIT_USER, process.env.GIT_PW)
         }
     }
 };
-
-// const cloneOptions = {
-//     remoteCallbacks: {
-//         credentials: (url, userName) => {
-//             return Git.Cred.sshKeyFromAgent(userName);
-//         }
-//     }
-// };
 
 
 // TODO ! This is for immediate safety :
