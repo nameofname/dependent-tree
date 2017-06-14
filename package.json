@@ -4,10 +4,12 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^4.0.0",
     "nodegit": "^0.18.3",
     "request": "^2.81.0"
   },
   "scripts": {
-    "updateRepoList": "node ./scripts/updateRepoList.js"
+    "updateRepoList": "node ./scripts/updateRepoList.js",
+    "cloneAllRepos": "node ./scripts/cloneAllRepos.js"
   }
 }
