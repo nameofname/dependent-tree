@@ -12,11 +12,11 @@ try {
     throw e;
 }
 allRepos = allRepos.filter(o => !!o.clone_url); // filter out urls that are empty or undefined
+
 const cloneOptions = {
     fetchOpts: {
         callbacks: {
-            certificateCheck: () => 1,
-            credentials: () => NodeGit.Cred.userpassPlaintextNew(process.env.GIT_USER, process.env.GIT_PW)
+            credentials: () => Git.Cred.userpassPlaintextNew(process.env.GIT_USER, process.env.GIT_PW)
         }
     }
 };
