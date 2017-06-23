@@ -1,18 +1,18 @@
 "use strict";
 
 require('dotenv').config();
+const log = require('color-log');
 const path = require('path');
 const fs = require('fs');
 const Git = require('nodegit');
-let allRepos;
-try {
-    allRepos = require('../allRepos.json');
-} catch (e) {
-    console.log('PLEAS READ : allRepos.json file doesn\'t exist. Run "yarn updateRepoList"\n', e);
-    throw e;
-}
-allRepos = allRepos.filter(o => !!o.clone_url); // filter out urls that are empty or undefined
-
+const repoBlackList = [
+    '1stdibs.com-archive',
+    'elledecor',
+    '1stdibs.com-static',
+    '1stdibs-admin-v1',
+    'dcs',
+    'OnlineGalleries'
+]; // black list of repos not to clone
 const cloneOptions = {
     fetchOpts: {
         callbacks: {
@@ -20,35 +20,68 @@ const cloneOptions = {
         }
     }
 };
+let allRepos;
 
 
-// TODO ! This is for immediate safety :
-allRepos.splice(3, allRepos.length);
-// TODO ! This is for immediate safety :
-
-
-const cloneThem = () => {
-    const promises = [];
-
-    allRepos.forEach(o => {
-        const { clone_url, name } = o;
-        const dir = path.resolve(`${__dirname}/../repos/${name}`);
-        if (!fs.existsSync(dir)) {
-            console.log(`cloning ${name} into ${dir} via ${clone_url}`);
-            promises.push(Git.Clone(clone_url, dir, cloneOptions));
-        } else {
-            console.log(`skipping ${dir} - it already exists`);
-        }
-    });
-
-    Promise.all(promises)
-        .then(() => {
-            console.log('All repos cloned');
-        })
-        .catch(e => {
-            console.log("Error cloning repo");
-            throw e;
-        })
+const authCloneUrl = (projectName, user, pass) => {
+    return `https://${encodeURIComponent(user)}:${encodeURIComponent(pass)}@github.com/${projectName}.git`;
 };
 
-module.exports = cloneThem;
+const requireRepoList = () => {
+    try {
+        allRepos = require('../allRepos.json');
+    } catch (e) {
+        log.error('PLEAS READ : allRepos.json file doesn\'t exist. Run "yarn updateRepoList"\n', e);
+        throw e;
+    }
+
+    // filter out urls that are empty or undefined, or black listed repositories.
+    allRepos = allRepos.filter(o => {
+        return !!o.clone_url && !repoBlackList.includes(o.name);
+    });
+};
+
+const ensureRepoDir = () => {
+    const repoDir = path.resolve(`${__dirname}/repos/`);
+    if (!fs.existsSync(repoDir)) {
+        log.info('Creating repository directory.');
+        fs.mkdirSync(repoDir);
+    }
+};
+
+const cloneNext = () => {
+    if (allRepos.length) {
+        cloneOne();
+    } else {
+        log.mark('SUCCESS! All repositories successfully cloned!');
+    }
+};
+
+const cloneOne = () => {
+    const repoObj = allRepos.shift();
+    const { full_name, name } = repoObj;
+    const dir = path.resolve(`${__dirname}/../repos/${name}`);
+    const cloneUrl = authCloneUrl(full_name, process.env.GIT_USER, process.env.GIT_PW);
+    let promise;
+
+    if (!fs.existsSync(dir)) {
+        log.info(`Cloning ${name} (${cloneUrl}) into ${dir}`);
+        promise = Git.Clone(cloneUrl, dir, cloneOptions);
+    } else {
+        log.info(`Skipping ${dir} - it already exists`);
+        return cloneNext();
+    }
+
+    promise
+        .then(() => {
+            log.info(`Successfully cloned ${full_name}, finding more repos to clone...`);
+            cloneNext();
+        })
+        .catch(err => { throw err });
+};
+
+module.exports = () => {
+    requireRepoList();
+    ensureRepoDir();
+    cloneNext();
+};

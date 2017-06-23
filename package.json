@@ -4,12 +4,14 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "color-log": "^0.0.2",
     "dotenv": "^4.0.0",
     "nodegit": "^0.18.3",
     "request": "^2.81.0"
   },
   "scripts": {
     "updateRepoList": "node ./scripts/updateRepoList.js",
+    "cleanRepos": "rm -rf ./repos/*",
     "cloneAllRepos": "node ./scripts/cloneAllRepos.js"
   }
 }
