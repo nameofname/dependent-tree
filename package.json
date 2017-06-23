@@ -10,8 +10,9 @@
     "request": "^2.81.0"
   },
   "scripts": {
-    "updateRepoList": "node ./scripts/updateRepoList.js",
     "cleanRepos": "rm -rf ./repos/*",
-    "cloneAllRepos": "node ./scripts/cloneAllRepos.js"
+    "updateRepoList": "node ./scripts/updateRepoList.js",
+    "cloneAllRepos": "node ./scripts/cloneAllRepos.js",
+    "buildModuleTree": "node ./scripts/buildModuleTree.js"
   }
 }

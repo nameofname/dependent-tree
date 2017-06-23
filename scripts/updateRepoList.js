@@ -1,3 +1,3 @@
 "use strict";
 
-require('../src/updateAllRepos')();
+require('../src/updateRepoList')();
