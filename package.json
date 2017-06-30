@@ -14,7 +14,6 @@
     "cleanRepos": "rm -rf ./repos/*",
     "updateRepoList": "node ./scripts/updateRepoList.js",
     "cloneAllRepos": "node ./scripts/cloneAllRepos.js",
-    "buildShallowTree": "node ./scripts/buildShallowTree.js",
     "buildDependentTree": "node ./scripts/buildDependentTree.js"
   }
 }

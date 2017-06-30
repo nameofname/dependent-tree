@@ -1,7 +1,7 @@
 "use strict";
 
 const shallowTree = require('./buildShallowTree')();
-const logger = require('./logger');
+const logger = require('./../logger');
 
 
 const buildTreeRecur = (currNode, pathToNode) => {

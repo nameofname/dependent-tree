@@ -3,7 +3,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const log = require('./logger');
+const log = require('./../logger');
 const multiPackageProjects = ['dibs-components', 'dibs-utils'];
 const specialCases = {
     '1stdibs.com': '/dibs'
