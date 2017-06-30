@@ -51,24 +51,23 @@ const requireEveryJson = () => {
     return packageObj;
 };
 
-const _iterateDependencies = (packageObj, depObj, type) => {
-    Object.keys(depObj).forEach(key => {
-        if (packageObj.hasOwnProperty(key)) { // in this case, it is one of our dependencies
-            // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // packageObj[key].dependents[key] = {
-            //     type, version: depObj[key]
-            // };
+const _iterateDependencies = (packageName, packageObj, depObj, type) => {
+    Object.keys(depObj).forEach(dependencyName => {
+        // in this case, it is one of our dependencies, so add a dependent entry to the package that packageName depends on
+        if (packageObj.hasOwnProperty(dependencyName)) {
+            packageObj[dependencyName].dependents[packageName] = {
+                type, version: depObj[dependencyName]
+            }
         }
     });
 };
 
 const buildShallowTree = (packageObj) => {
-    Object.keys(packageObj).forEach(key => {
-        const { packageJson } = packageObj[key];
-        const {dependencies = {}, devDependencies = {}, peerDependencies = {}} = packageJson;
-        _iterateDependencies(packageObj, dependencies, 'dependencies');
-        _iterateDependencies(packageObj, devDependencies, 'devDependencies');
-        _iterateDependencies(packageObj, peerDependencies, 'peerDependencies');
+    Object.keys(packageObj).forEach(packageName => {
+        const {dependencies = {}, devDependencies = {}, peerDependencies = {}} = packageObj[packageName].packageJson;
+        _iterateDependencies(packageName, packageObj, dependencies, 'dependencies');
+        _iterateDependencies(packageName, packageObj, devDependencies, 'devDependencies');
+        _iterateDependencies(packageName, packageObj, peerDependencies, 'peerDependencies');
     });
 
     return packageObj;
