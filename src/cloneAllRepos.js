@@ -1,6 +1,5 @@
 "use strict";
 
-require('dotenv').config();
 const log = require('color-log');
 const path = require('path');
 const fs = require('fs');

@@ -6,7 +6,7 @@ const fs = require('fs');
 const oauthToken = process.env.PACKAGE_AUTOMATOR_OAUTH;
 let allRepos = [];
 
-
+console.log(process.env.PACKAGE_AUTOMATOR_OAUTH, process.env.GIT_USER, process.env.GIT_PW)
 // curl -H "Authorization: token $PACKAGE_AUTOMATOR_OAUTH"  "https://api.github.com/orgs/1stdibs/repos?per_page=200"
 const getMoreRepos = (pageNum = 0) => {
     return request(`https://api.github.com/orgs/1stdibs/repos?per_page=100&page=${pageNum}`, {
