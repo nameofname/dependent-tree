@@ -5,6 +5,9 @@ const path = require('path');
 const fs = require('fs');
 const log = require('./logger');
 const multiPackageProjects = ['dibs-components', 'dibs-utils'];
+const specialCases = {
+    '1stdibs.com': '/dibs'
+};
 const getRepoPath = folderArr => path.resolve(__dirname, `../repos/${folderArr ? folderArr.join('/') : ''}`);
 
 
@@ -45,7 +48,11 @@ const requireEveryJson = () => {
                         }
                     });
             } else {
-                findPackJsonInDir(getRepoPath([path]), packageObj);
+                let pathArr = [path];
+                if (specialCases[path]) {
+                    pathArr.push(specialCases[path]);
+                }
+                findPackJsonInDir(getRepoPath(pathArr), packageObj);
             }
         });
 
