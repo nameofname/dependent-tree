@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "color-log": "^0.0.2",
+    "commander": "^2.10.0",
     "dotenv": "^4.0.0",
     "nodegit": "^0.18.3",
     "request": "^2.81.0"
@@ -13,6 +14,6 @@
     "cleanRepos": "rm -rf ./repos/*",
     "updateRepoList": "node ./scripts/updateRepoList.js",
     "cloneAllRepos": "node ./scripts/cloneAllRepos.js",
-    "buildModuleTree": "node ./scripts/buildModuleTree.js"
+    "buildShallowTree": "node ./scripts/buildShallowTree.js"
   }
 }
