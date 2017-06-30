@@ -17,7 +17,8 @@ const findPackJsonInDir = (dirPath, obj) => {
             packageJson = require(jsonPath);
             obj[packageJson.name] = {
                 packageJson,
-                dependents : {}
+                packageName: packageJson.name,
+                dependents: {}
             };
             log.trace(`Successfully required package.json from ${jsonPath}`);
         } catch (e) {
@@ -77,8 +78,8 @@ module.exports = () => {
     const packageObj = requireEveryJson();
     const shallowTree = buildShallowTree(packageObj);
     const shallowTreeClone = Object.keys(shallowTree).reduce((prev, key) => {
-        const {dependents} = shallowTree[key];
-        prev[key] = {dependents};
+        const {packageName, dependents} = shallowTree[key];
+        prev[key] = {packageName, dependents};
         return prev;
     }, {});
 
