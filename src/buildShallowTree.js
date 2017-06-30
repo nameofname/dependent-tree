@@ -82,5 +82,6 @@ module.exports = () => {
         return prev;
     }, {});
 
-    log.info(shallowTreeClone);
+    log.trace('Shallow Tree Built : ', shallowTreeClone);
+    return shallowTreeClone;
 };
