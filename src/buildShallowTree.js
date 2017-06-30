@@ -4,7 +4,7 @@
 const path = require('path');
 const fs = require('fs');
 const log = require('./logger');
-const multiPackageProjects = ['dibs-components', 'dibs-elements', 'dibs-utils'];
+const multiPackageProjects = ['dibs-components', 'dibs-utils'];
 const getRepoPath = folderArr => path.resolve(__dirname, `../repos/${folderArr ? folderArr.join('/') : ''}`);
 
 

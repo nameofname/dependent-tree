@@ -1,4 +1,7 @@
 "use strict";
 
 require('dotenv').config();
-require('../src/buildShallowTree')();
+const logger = require('../src/logger');
+const shallowTree = require('../src/buildShallowTree')();
+
+logger.info(shallowTree);

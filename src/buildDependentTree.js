@@ -17,6 +17,10 @@ const buildTreeRecur = (currNode) => {
 
 module.exports = packageName => {
     const packageShallow = shallowTree[packageName];
+    if (!packageShallow) {
+        logger.error(`Invalid package name, ${packageName} not found in dependent map`);
+        process.exit(1);
+    }
     logger.trace(packageShallow);
 
     return buildTreeRecur(packageShallow);
