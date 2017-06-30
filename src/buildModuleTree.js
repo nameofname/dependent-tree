@@ -53,10 +53,11 @@ const requireEveryJson = () => {
 
 const _iterateDependencies = (packageObj, depObj, type) => {
     Object.keys(depObj).forEach(key => {
-        if (packageObj.hasOwnProperty(key)) {
-            packageObj[key].dependents[key] = {
-                type, version: depObj[key]
-            };
+        if (packageObj.hasOwnProperty(key)) { // in this case, it is one of our dependencies
+            // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // packageObj[key].dependents[key] = {
+            //     type, version: depObj[key]
+            // };
         }
     });
 };
