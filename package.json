@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "color-log": "^0.0.2",
+    "colors": "^1.1.2",
     "commander": "^2.10.0",
     "dotenv": "^4.0.0",
     "nodegit": "^0.18.3",
