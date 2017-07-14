@@ -69,8 +69,9 @@ class DependentTreeMap {
     getDependentTree(packageName) {
         const packageNode = this.packageStore[packageName];
         if (!packageNode) {
-            log.error(`Invalid package name, ${packageName} not found in dependent map`);
-            return {};
+            const msg = `Invalid package name, ${packageName} not found in dependent map`;
+            log.error(msg);
+            throw new Error(msg);
         }
         log.trace(packageNode);
         return this._buildTreeRecur(packageNode, {}, [packageName])

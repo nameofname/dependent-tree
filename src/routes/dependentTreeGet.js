@@ -1,6 +1,7 @@
 "use strict";
 
 const DependentTreeMap = require('../lib/DependentTreeMap');
+const boom = require('boom');
 const treeMap = new DependentTreeMap();
 
 module.exports = {
@@ -9,7 +10,13 @@ module.exports = {
     config: {
         handler: (req, reply) => {
             const { pkg } = req.params;
-            return reply(treeMap.getDependentTree(pkg));
+            let res;
+            try {
+                res = treeMap.getDependentTree(pkg);
+            } catch (e) {
+                return reply(boom.notFound(e));
+            }
+            return reply(res);
         }
     }
 };
