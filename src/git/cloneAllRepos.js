@@ -4,14 +4,7 @@ const log = require('color-log');
 const path = require('path');
 const fs = require('fs');
 const Git = require('nodegit');
-const repoBlackList = [
-    '1stdibs.com-archive',
-    'elledecor',
-    '1stdibs.com-static',
-    '1stdibs-admin-v1',
-    'dcs',
-    'OnlineGalleries'
-]; // black list of repos not to clone
+const repoBlackList = require('../config/repoBlackList.json'); // black list of repos not to clone
 const cloneOptions = {
     fetchOpts: {
         callbacks: {
@@ -19,7 +12,6 @@ const cloneOptions = {
         }
     }
 };
-let allRepos;
 
 
 const authCloneUrl = (projectName, user, pass) => {
@@ -27,15 +19,16 @@ const authCloneUrl = (projectName, user, pass) => {
 };
 
 const requireRepoList = () => {
+    let allRepos;
     try {
-        allRepos = require('../allRepos.json');
+        allRepos = require('../../allRepos.json');
     } catch (e) {
         log.error('PLEAS READ : allRepos.json file doesn\'t exist. Run "yarn updateRepoList"\n', e);
         throw e;
     }
 
     // filter out urls that are empty or undefined, or black listed repositories.
-    allRepos = allRepos.filter(o => {
+    return allRepos.filter(o => {
         return !!o.clone_url && !repoBlackList.includes(o.name);
     });
 };
@@ -48,18 +41,17 @@ const ensureRepoDir = () => {
     }
 };
 
-const cloneNext = () => {
+const cloneNext = (allRepos) => {
     if (allRepos.length) {
-        cloneOne();
+        cloneOne(allRepos, allRepos.shift());
     } else {
         log.mark('SUCCESS! All repositories successfully cloned!');
     }
 };
 
-const cloneOne = () => {
-    const repoObj = allRepos.shift();
+const cloneOne = (allRepos, repoObj) => {
     const { full_name, name } = repoObj;
-    const dir = path.resolve(`${__dirname}/../repos/${name}`);
+    const dir = path.resolve(`${__dirname}/../../repos/${name}`);
     const cloneUrl = authCloneUrl(full_name, process.env.GIT_USER, process.env.GIT_PW);
     let promise;
 
@@ -68,19 +60,19 @@ const cloneOne = () => {
         promise = Git.Clone(cloneUrl, dir, cloneOptions);
     } else {
         log.info(`Skipping ${dir} - it already exists`);
-        return cloneNext();
+        return cloneNext(allRepos);
     }
 
     promise
         .then(() => {
             log.info(`Successfully cloned ${full_name}, finding more repos to clone...`);
-            cloneNext();
+            cloneNext(allRepos);
         })
         .catch(err => { throw err });
 };
 
 module.exports = () => {
-    requireRepoList();
+    const repoList = requireRepoList();
     ensureRepoDir();
-    cloneNext();
+    cloneNext(repoList);
 };

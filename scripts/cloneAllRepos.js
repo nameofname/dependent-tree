@@ -1,4 +1,4 @@
 "use strict";
 
 require('dotenv').config();
-require('../src/cloneAllRepos')();
+require('../src/git/cloneAllRepos')();
