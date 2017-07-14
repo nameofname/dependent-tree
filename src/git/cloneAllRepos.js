@@ -5,18 +5,8 @@ const path = require('path');
 const fs = require('fs');
 const Git = require('nodegit');
 const repoBlackList = require('../config/repoBlackList.json'); // black list of repos not to clone
-const cloneOptions = {
-    fetchOpts: {
-        callbacks: {
-            credentials: () => Git.Cred.userpassPlaintextNew(process.env.GIT_USER, process.env.GIT_PW)
-        }
-    }
-};
-
-
-const authCloneUrl = (projectName, user, pass) => {
-    return `https://${encodeURIComponent(user)}:${encodeURIComponent(pass)}@github.com/${projectName}.git`;
-};
+const touchRepoDir = require('../lib/touchRepoDir');
+const { cloneOptions, authCloneUrl } = require('../lib/gitCredentials');
 
 const requireRepoList = () => {
     let allRepos;
@@ -33,46 +23,42 @@ const requireRepoList = () => {
     });
 };
 
-const ensureRepoDir = () => {
-    const repoDir = path.resolve(`${__dirname}/repos/`);
-    if (!fs.existsSync(repoDir)) {
-        log.info('Creating repository directory.');
-        fs.mkdirSync(repoDir);
-    }
-};
+const cloneThemAll = (allRepos, repoDir) => {
+    const cloneNext = () => {
+        if (allRepos.length) {
+            cloneOne(allRepos.shift());
+        } else {
+            log.mark('SUCCESS! All repositories successfully cloned!');
+        }
+    };
 
-const cloneNext = (allRepos) => {
-    if (allRepos.length) {
-        cloneOne(allRepos, allRepos.shift());
-    } else {
-        log.mark('SUCCESS! All repositories successfully cloned!');
-    }
-};
+    const cloneOne = (repoObj) => {
+        const { full_name, name } = repoObj;
+        const dir = path.resolve(`${repoDir}/${name}`);
+        const cloneUrl = authCloneUrl(full_name, process.env.GIT_USER, process.env.GIT_PW);
+        let promise;
 
-const cloneOne = (allRepos, repoObj) => {
-    const { full_name, name } = repoObj;
-    const dir = path.resolve(`${__dirname}/../../repos/${name}`);
-    const cloneUrl = authCloneUrl(full_name, process.env.GIT_USER, process.env.GIT_PW);
-    let promise;
+        if (!fs.existsSync(dir)) {
+            log.info(`Cloning ${name} (${cloneUrl}) into ${dir}`);
+            promise = Git.Clone(cloneUrl, dir, cloneOptions);
+        } else {
+            log.info(`Skipping ${dir} - it already exists`);
+            return cloneNext();
+        }
 
-    if (!fs.existsSync(dir)) {
-        log.info(`Cloning ${name} (${cloneUrl}) into ${dir}`);
-        promise = Git.Clone(cloneUrl, dir, cloneOptions);
-    } else {
-        log.info(`Skipping ${dir} - it already exists`);
-        return cloneNext(allRepos);
-    }
+        promise
+            .then(() => {
+                log.info(`Successfully cloned ${full_name}, finding more repos to clone...`);
+                cloneNext();
+            })
+            .catch(err => { throw err });
+    };
 
-    promise
-        .then(() => {
-            log.info(`Successfully cloned ${full_name}, finding more repos to clone...`);
-            cloneNext(allRepos);
-        })
-        .catch(err => { throw err });
+    cloneNext();
 };
 
 module.exports = () => {
     const repoList = requireRepoList();
-    ensureRepoDir();
-    cloneNext(repoList);
+    const repoDir = touchRepoDir();
+    cloneThemAll(repoList, repoDir);
 };
