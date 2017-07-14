@@ -3,8 +3,8 @@
 require('dotenv').config();
 const commander = require('commander');
 const logger = require('../src/lib/logger');
-const DependentTreeMap = require('../src/DependentTreeMap');
-const treePrinter = require('../src/treePrinter');
+const DependentTreeMap = require('../src/lib/DependentTreeMap');
+const treePrinter = require('../src/lib/treePrinter');
 
 commander
     .option('-p, --package [value]', 'Package name to build dependent tree for')

@@ -1,6 +1,6 @@
 require('dotenv').config();
 const logger = require('./src/lib/logger')
-const DependentTreeMap = require('./src/DependentTreeMap');
+const DependentTreeMap = require('./src/lib/DependentTreeMap');
 const treeMap = new DependentTreeMap();
 
 const result = treeMap.getDependentTree('dibs-address-form');

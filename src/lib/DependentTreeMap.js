@@ -3,8 +3,9 @@
 
 const path = require('path');
 const fs = require('fs');
-const log = require('./lib/logger');
+const log = require('./logger');
 const assert = require('assert');
+const touchRepoDir = require('./touchRepoDir');
 
 
 class DependentLinkNode {
@@ -102,7 +103,7 @@ class DependentTreeMap {
     }
 
     _getRepoPath (folderArr) {
-        return path.resolve(__dirname, `../repos/${folderArr ? folderArr.join('/') : ''}`);
+        return path.resolve(`${touchRepoDir()}/${folderArr ? folderArr.join('/') : ''}`);
     }
 
     _findPackJsonInDir (dirPath) {
