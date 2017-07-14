@@ -2,7 +2,7 @@
 
 const colors = require('colors');
 
-const treePrinter = (dependentTree, currLevel=0) => {
+const treePrinter = (dependentTree, currLevel = 0) => {
     const indent = new Array(currLevel).fill('|      ').join('');
     Object.keys(dependentTree).forEach(depName => {
         const { dependents, type, version } = dependentTree[depName];
