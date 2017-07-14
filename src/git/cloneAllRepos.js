@@ -35,7 +35,7 @@ const cloneThemAll = (allRepos, repoDir) => {
     const cloneOne = (repoObj) => {
         const { full_name, name } = repoObj;
         const dir = path.resolve(`${repoDir}/${name}`);
-        const cloneUrl = authCloneUrl(full_name, process.env.GIT_USER, process.env.GIT_PW);
+        const cloneUrl = authCloneUrl(full_name);
         let promise;
 
         if (!fs.existsSync(dir)) {

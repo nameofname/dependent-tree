@@ -1,5 +1,5 @@
 require('dotenv').config();
-const logger = require('./src/logger')
+const logger = require('./src/lib/logger')
 const DependentTreeMap = require('./src/DependentTreeMap');
 const treeMap = new DependentTreeMap();
 

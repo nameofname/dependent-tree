@@ -9,7 +9,9 @@ const cloneOptions = {
     }
 };
 
-const authCloneUrl = (projectName, user, pass) => {
+const authCloneUrl = (projectName) => {
+    const user = process.env.GIT_USER;
+    const pass = process.env.GIT_PW;
     return `https://${encodeURIComponent(user)}:${encodeURIComponent(pass)}@github.com/${projectName}.git`;
 };
 

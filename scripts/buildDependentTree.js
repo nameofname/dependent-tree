@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 const commander = require('commander');
-const logger = require('../src/logger');
+const logger = require('../src/lib/logger');
 const DependentTreeMap = require('../src/DependentTreeMap');
 const treePrinter = require('../src/treePrinter');
 

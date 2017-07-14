@@ -3,7 +3,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const log = require('./logger');
+const log = require('./lib/logger');
 const assert = require('assert');
 
 

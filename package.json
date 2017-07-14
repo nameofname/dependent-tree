@@ -9,12 +9,14 @@
     "commander": "^2.10.0",
     "dotenv": "^4.0.0",
     "nodegit": "^0.18.3",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "sync-exec": "^0.6.2"
   },
   "scripts": {
     "cleanRepos": "rm -rf ./repos/*",
     "updateRepoList": "node ./scripts/updateRepoList.js",
     "cloneAllRepos": "node ./scripts/cloneAllRepos.js",
+    "pullAllRepos": "node ./scripts/pullAllRepos.js",
     "buildDependentTree": "node ./scripts/buildDependentTree.js"
   }
 }
