@@ -4,6 +4,7 @@ const request = require('request');
 const path = require('path');
 const fs = require('fs');
 const logger = require('../lib/logger');
+const touchJsonDir = require('../lib/touchJsonDir');
 const oauthToken = process.env.DEPENDENT_TREE_OAUTH;
 const org = process.env.DEPENDENT_TREE_ORG;
 
@@ -105,6 +106,8 @@ const downloadPackageJson = ({ name, path: filePath, download_url, }) => {
 
 
 const getPackageJsons = () => {
+
+    touchJsonDir();
 
     getAllPackagePaths()
 
