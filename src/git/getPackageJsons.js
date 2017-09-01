@@ -48,7 +48,8 @@ const getAllDownloadUrls = (resultsArr) => {
         const getOneDownloadUrl = ((resultsArr, bypassModCheck = false) => {
 
             // pause half a second every 10 requests
-            if (resultsArr % 10 === 0 && !bypassModCheck) {
+            if (resultsArr.length % 10 === 0 && !bypassModCheck) {
+                logger.trace(`Throttling half a second...`);
                 setTimeout(() => getOneDownloadUrl(resultsArr, true), 500);
 
             } else {
@@ -66,7 +67,7 @@ const getAllDownloadUrls = (resultsArr) => {
                 }, (err, res, body) => {
                     if (err || res.statusCode !== 200) reject(err ? err : body);
                     const { download_url } = body;
-                    downloadUrls.push({ name: repository.name, download_url });
+                    downloadUrls.push({ name: repository.name, path, download_url });
                     logger.trace(`Found download url at address : ${download_url}`);
                     return (resultsArr.length) ? getOneDownloadUrl(resultsArr) : resolve(downloadUrls)
                 });
@@ -78,20 +79,23 @@ const getAllDownloadUrls = (resultsArr) => {
 };
 
 
-const downloadPackageJson = ({ name, download_url, }) => {
+const downloadPackageJson = ({ name, path, download_url, }) => {
+
     return new Promise((resolve, reject) => {
         logger.info(`request package json from download url : ${download_url}`)
+
         return request(download_url, {
             json: true,
             headers: {
                 ['Authorization']: `token ${oauthToken}`,
                 ['User-Agent']: 'node'
             }
+
         }, (err, res, body) => {
             if (err || res.statusCode !== 200) reject(err ? err : body);
-            const dst = path.resolve(`${__dirname}/../../scriptOutput/allPackages.json`);
-            fs.writeFileSync(dst, JSON.stringify(results, null, 4));
-            logger.trace(`Downloaded package.json from ${download_url}`);
+            const dst = path.resolve(`${__dirname}/../../packageJsons/${name}-${path.replace('/', '_')}.json`);
+            fs.writeFileSync(dst, JSON.stringify(body, null, 4));
+            logger.trace(`Downloaded package.json and wrote to destination : ${dst}`);
             resolve(body);
         });
     });
@@ -104,17 +108,16 @@ const getPackageJsons = () => {
 
         .then(results => {
             logger.info(`Fetching package.json info : complete. Found ${results.length} records`);
-            getAllDownloadUrls(results);
+            return getAllDownloadUrls(results);
         })
 
         .then(allDownloadUrls => {
             logger.info('allDownloadUrls', allDownloadUrls);
-            return Promise.all(allDownloadUrls.map(url => downloadPackageJson))
+            return Promise.all(allDownloadUrls.map(downloadPackageJson))
         })
 
-        .then(allDownloadUrls => {
-            logger.info('allDownloadUrls', allDownloadUrls);
-            return Promise.all(allDownloadUrls.map(url => downloadPackageJson))
+        .then(() => {
+            logger.info('Downloads complete.');
         })
 
         .catch(err => {
