@@ -19,7 +19,7 @@ class DependentLinkNode {
 
 class PackageNode {
     constructor({name, version, packageJson}) {
-        assert(name && version && packageJson);
+        assert(name && version && packageJson, `One of {name, version, packageJson} was not included in PackageNode : ${name} ${version} ${packageJson}`);
         this.name = name;
         this.version = version;
         this.packageJson = packageJson;
@@ -102,32 +102,6 @@ class DependentTreeMap {
         });
     }
 
-    // _getRepoPath (folderArr) {
-    //     return path.resolve(`${touchRepoDir()}/${folderArr ? folderArr.join('/') : ''}`);
-    // }
-    //
-    // _findPackJsonInDir (dirPath) {
-    //     const jsonPath = `${dirPath}/package.json`;
-    //     let packageJson;
-    //
-    //     if (fs.existsSync(jsonPath)) {
-    //         try {
-    //             packageJson = require(jsonPath);
-    //
-    //             const {name, version} = packageJson;
-    //             this.packageStore[packageJson.name] = new PackageNode({
-    //                 name, version, packageJson
-    //             });
-    //             log.trace(`Successfully required package.json from ${jsonPath}`);
-    //         } catch (e) {
-    //             log.error(`package.json exists for ${dirPath} but could not be required`);
-    //         }
-    //     } else {
-    //         log.trace(`Skipping ${jsonPath}, no package.json found`);
-    //     }
-    // }
-
-    // TODO ! 
     _buildPackageStore() {
         const packagesPath = path.resolve(`${__dirname}/../../packageJsons`);
 
@@ -145,7 +119,7 @@ class DependentTreeMap {
                     log.trace(`Successfully required package.json from ${jsonPath}`);
 
                 } catch (e) {
-                    log.error(`package.json exists for ${packagesPath} but could not be required`);
+                    log.trace(`package.json exists for ${jsonPath} but could not be required`);
                 }
             });
 
