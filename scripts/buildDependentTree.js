@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 "use strict";
 
 require('dotenv').config();
@@ -9,7 +10,13 @@ const treePrinter = require('../src/lib/treePrinter');
 
 commander
     .option('-p, --package [value]', 'Package name to build dependent tree for')
+    .option('-u, --update', 'Update packages')
     .parse(process.argv);
+
+if (commander.update) {
+    require('./getPackageJsons');
+    process.exit(0);
+}
 
 if (!commander.package) {
     logger.trace('commander object state : ', commander);
