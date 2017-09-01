@@ -5,37 +5,22 @@ const path = require('path');
 const fs = require('fs');
 const logger = require('../lib/logger');
 const oauthToken = process.env.PACKAGE_AUTOMATOR_OAUTH;
-const parPage = 50;
 
-const downloadPackageJson = (download_url) => {
-    return new Promise((resolve, reject) => {
-        return request(download_url, {
-            json: true,
-            headers: {
-                ['Authorization']: `token ${oauthToken}`,
-                ['User-Agent']: 'node'
-            }
-        }, (err, res, body) => {
-            if (err) reject(err);
-            logger.info('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', res.status);
-            logger.info(body);
-        });
-    });
-};
 
 // curl -H "Authorization: token $PACKAGE_AUTOMATOR_OAUTH"  "https://api.github.com/search/code?q=filename:package.json+org:1stdibs&per_page=50&page=1"
 const getAllPackagePaths = () => {
-    logger.info('Fetching package.json info for each repository');
 
+    const perPage = 50;
+    const packageSearchUrl = n => `https://api.github.com/search/code?q=filename:package.json+org:1stdibs&per_page=${perPage}&page=${n}`;
     let pageNum = 0;
     let results = [];
+    logger.info(`Fetching package.json info for each repository from ${packageSearchUrl("X")}`);
 
     return new Promise((resolve, reject) => {
         const getMoreJsons = () => {
-            logger.info(`Fetching page ${pageNum}`);
-            const packageSearchUrl = `https://api.github.com/search/code?q=filename:package.json+org:1stdibs&per_page=${parPage}&page=${pageNum}`;
+            logger.trace(`Fetching page ${pageNum}`);
 
-            return request(packageSearchUrl, {
+            return request(packageSearchUrl(pageNum), {
                 json: true,
                 headers: {
                     ['Authorization']: `token ${oauthToken}`,
@@ -43,12 +28,10 @@ const getAllPackagePaths = () => {
                 }
 
             }, (err, res, body) => {
-                // if (err || res.status !== 200) reject(err);
-                if (err) reject(err);
+                if (err || res.statusCode !== 200) reject(err ? err : body);
                 const items = body && body.items || [];
                 results = results.concat(items);
-                logger.info('length', items.length)
-                return (items.length >= parPage) ? getMoreJsons(++pageNum) : resolve(results);
+                return (items.length >= perPage) ? getMoreJsons(++pageNum) : resolve(results);
             });
         };
 
@@ -57,21 +40,87 @@ const getAllPackagePaths = () => {
 };
 
 
-const getPackageJsons = () => {
+const getAllDownloadUrls = (resultsArr) => {
 
-    const downloadPromises = [];
+    return new Promise((resolve, reject) => {
 
-    getAllPackagePaths()
-        .then(results => {
-            logger.info('Fetching package.json info : complete.');
-            results.forEach(({ download_url }) => {
-                downloadPromises.push(downloadPackageJson(download_url));
-            });
-        })
-        .catch(err => {
-            throw err;
+        const downloadUrls = [];
+        const getOneDownloadUrl = ((resultsArr, bypassModCheck = false) => {
+
+            // pause half a second every 10 requests
+            if (resultsArr % 10 === 0 && !bypassModCheck) {
+                setTimeout(() => getOneDownloadUrl(resultsArr, true), 500);
+
+            } else {
+                const { repository, path } = resultsArr.shift();
+                const packageInfoUrl = `https://api.github.com/repos/1stdibs/${repository.name}/contents/${path}`;
+                logger.trace(`Requesting package.json information from ${packageInfoUrl}`);
+
+                request(packageInfoUrl, {
+                    json: true,
+                    headers: {
+                        ['Authorization']: `token ${oauthToken}`,
+                        ['User-Agent']: 'node'
+                    }
+
+                }, (err, res, body) => {
+                    if (err || res.statusCode !== 200) reject(err ? err : body);
+                    const { download_url } = body;
+                    downloadUrls.push({ name: repository.name, download_url });
+                    logger.trace(`Found download url at address : ${download_url}`);
+                    return (resultsArr.length) ? getOneDownloadUrl(resultsArr) : resolve(downloadUrls)
+                });
+            }
         });
 
+        getOneDownloadUrl(resultsArr);
+    });
+};
+
+
+const downloadPackageJson = ({ name, download_url, }) => {
+    return new Promise((resolve, reject) => {
+        logger.info(`request package json from download url : ${download_url}`)
+        return request(download_url, {
+            json: true,
+            headers: {
+                ['Authorization']: `token ${oauthToken}`,
+                ['User-Agent']: 'node'
+            }
+        }, (err, res, body) => {
+            if (err || res.statusCode !== 200) reject(err ? err : body);
+            const dst = path.resolve(`${__dirname}/../../scriptOutput/allPackages.json`);
+            fs.writeFileSync(dst, JSON.stringify(results, null, 4));
+            logger.trace(`Downloaded package.json from ${download_url}`);
+            resolve(body);
+        });
+    });
+};
+
+
+const getPackageJsons = () => {
+
+    getAllPackagePaths()
+
+        .then(results => {
+            logger.info(`Fetching package.json info : complete. Found ${results.length} records`);
+            getAllDownloadUrls(results);
+        })
+
+        .then(allDownloadUrls => {
+            logger.info('allDownloadUrls', allDownloadUrls);
+            return Promise.all(allDownloadUrls.map(url => downloadPackageJson))
+        })
+
+        .then(allDownloadUrls => {
+            logger.info('allDownloadUrls', allDownloadUrls);
+            return Promise.all(allDownloadUrls.map(url => downloadPackageJson))
+        })
+
+        .catch(err => {
+            logger.error(err);
+            throw err;
+        });
 };
 
 
