@@ -3,9 +3,12 @@
 
 require('dotenv').config();
 require('../src/lib/checkConfig')();
+const path = require('path');
+const fs = require('fs');
 const commander = require('commander');
 const logger = require('../src/lib/logger');
 const DependentTreeMap = require('../src/lib/DependentTreeMap');
+const getPackageJsons = require('../src/git/getPackageJsons');
 const treePrinter = require('../src/lib/treePrinter');
 
 commander
@@ -14,16 +17,28 @@ commander
     .parse(process.argv);
 
 if (commander.update) {
-    require('./getPackageJsons');
-    process.exit(0);
+    getPackageJsons()
+        .then(() => {
+            process.exit(0);
+        })
+        .catch(() => {
+            process.exit(1);
+        });
+
+} else {
+    const jsonDir = path.resolve(`${__dirname}/../packageJsons/`);
+    if (!fs.existsSync(jsonDir)) {
+        logger.error('No package.json files found to compare. Please run dependent-tree --update (-u)')
+    }
+
+    if (!commander.package) {
+        logger.trace('commander object state : ', commander);
+        logger.error('package name is required, please supply a package argument (--package [value], -p [value])');
+        process.exit(1);
+    }
+
+    const treeMap = new DependentTreeMap();
+
+    treePrinter(treeMap.getDependentTree(commander.package));
 }
 
-if (!commander.package) {
-    logger.trace('commander object state : ', commander);
-    logger.error('package name is required, please supply a package argument (--package [value], -p [value])');
-    process.exit(1);
-}
-
-const treeMap = new DependentTreeMap();
-
-treePrinter(treeMap.getDependentTree(commander.package));

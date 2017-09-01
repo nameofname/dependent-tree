@@ -109,7 +109,7 @@ const getPackageJsons = () => {
 
     touchJsonDir();
 
-    getAllPackagePaths()
+    return getAllPackagePaths()
 
         .then(results => {
             logger.info(`Fetching package.json info : complete. Found ${results.length} records`);
