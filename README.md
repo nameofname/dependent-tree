@@ -1,7 +1,8 @@
 # Dependent Tree
 
 CLI utility which builds a dependent tree for your package to find out where it is used. 
-Works on a per-organization basis : it doesn't search all of npm, just your organization. 
+The 'dependent tree' is the inverse of a package's dependency tree - it's a tree of all packages depending on a given package.
+This utility works on a per-organization basis : it doesn't search all of npm, just your organization. 
 
 ## Steps : 
 
@@ -28,7 +29,11 @@ LOG_LEVEL=info
 
 ## Usage : 
 
-See below for setup
+```
+yarn add dependent-tree -g
+yarn updatePackages
+yarn buildDependentTree -p 
+```
 
 
 ## log levels 
