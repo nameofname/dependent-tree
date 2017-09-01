@@ -1,24 +1,29 @@
-"use strict";
-
+// @flow
 
 const colorLog = require('color-log');
 const noop = () => {};
-const logLevel = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info';
-const levels = ['error', 'warn', 'info', 'trace'];
-const level = levels.indexOf(logLevel);
-
-
-module.exports = {
-    error: message => {
-        return level > -1 ? colorLog.error(message) : noop();
-    },
-    warn: message => {
-        return level > 0 ? colorLog.warn(message) : noop();
-    },
-    info: message => {
-        return level > 1 ? colorLog.info(message) : noop();
-    },
-    trace: message => {
-        return level > 2 ? colorLog.info(message) : noop();
-    }
+const getLevel = () => {
+    const logLevel = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info';
+    const levels = ['error', 'warn', 'info', 'trace'];
+    return levels.indexOf(logLevel);
 };
+
+
+const error = (...messages) => {
+    const level = getLevel();
+    return level > -1 ? colorLog.error(messages) : noop();
+};
+const warn = (...messages) => {
+    const level = getLevel();
+    return level > 0 ? colorLog.warn(messages) : noop();
+};
+const info = (...messages) => {
+    const level = getLevel();
+    return level > 1 ? colorLog.info(messages) : noop();
+};
+const trace = (...messages) => {
+    const level = getLevel();
+    return level > 2 ? colorLog.info(messages) : noop();
+};
+
+module.exports = { error, warn, info, trace };
