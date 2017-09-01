@@ -4,14 +4,15 @@ const request = require('request');
 const path = require('path');
 const fs = require('fs');
 const logger = require('../lib/logger');
-const oauthToken = process.env.PACKAGE_AUTOMATOR_OAUTH;
+const oauthToken = process.env.DEPENDENT_TREE_OAUTH;
+const org = process.env.DEPENDENT_TREE_ORG;
 
 
-// curl -H "Authorization: token $PACKAGE_AUTOMATOR_OAUTH"  "https://api.github.com/search/code?q=filename:package.json+org:1stdibs&per_page=50&page=1"
+// curl -H "Authorization: token $DEPENDENT_TREE_OAUTH"  "https://api.github.com/search/code?q=filename:package.json+org:WHATEVER&per_page=50&page=1"
 const getAllPackagePaths = () => {
 
     const perPage = 50;
-    const packageSearchUrl = n => `https://api.github.com/search/code?q=filename:package.json+org:1stdibs&per_page=${perPage}&page=${n}`;
+    const packageSearchUrl = n => `https://api.github.com/search/code?q=filename:package.json+org:${org}&per_page=${perPage}&page=${n}`;
     let pageNum = 0;
     let results = [];
     logger.info(`Fetching package.json info for each repository from ${packageSearchUrl("X")}`);
@@ -54,7 +55,7 @@ const getAllDownloadUrls = (resultsArr) => {
 
             } else {
                 const { repository, path } = resultsArr.shift();
-                const packageInfoUrl = `https://api.github.com/repos/1stdibs/${repository.name}/contents/${path}`;
+                const packageInfoUrl = `https://api.github.com/repos/${org}/${repository.name}/contents/${path}`;
                 logger.trace(`Requesting package.json information from ${packageInfoUrl}`);
 
                 request(packageInfoUrl, {
@@ -83,7 +84,7 @@ const getAllDownloadUrls = (resultsArr) => {
 const downloadPackageJson = ({ name, path: filePath, download_url, }) => {
 
     return new Promise((resolve, reject) => {
-        logger.info(`request package json from download url : ${download_url}`)
+        logger.trace(`request package json from download url : ${download_url}`)
 
         return request(download_url, {
             json: true,
@@ -118,7 +119,7 @@ const getPackageJsons = () => {
         })
 
         .then(() => {
-            logger.info('Downloads complete.');
+            logger.info('Downloads complete. Check out your packageJsons folder, it should be full of packages json.');
         })
 
         .catch(err => {

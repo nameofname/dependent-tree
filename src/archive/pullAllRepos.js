@@ -3,7 +3,7 @@
 const fs = require('fs');
 const log = require('color-log');
 const touchRepoDir = require('touchRepoDir');
-const exec = require('../lib/exec');
+const exec = require('exec');
 
 const pullThemAll = (repoDir) => {
     const dirs = fs.readdirSync(repoDir);

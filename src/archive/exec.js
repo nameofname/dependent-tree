@@ -1,7 +1,7 @@
 'use strict';
 
 const exec = require('sync-exec');
-const logger = require('./logger');
+const logger = require('./../lib/logger');
 
 module.exports = function (cmd, options) {
     options = options || {};

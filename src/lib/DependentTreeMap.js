@@ -43,11 +43,6 @@ class DependentTreeMap {
 
     constructor() {
         this.packageStore = {};
-        this.multiPackageProjects = ['dibs-components', 'dibs-utils'];
-        this.specialCases = {
-            '1stdibs.com': '/dibs'
-        };
-
         /**
          * Example structure :
          *      {
