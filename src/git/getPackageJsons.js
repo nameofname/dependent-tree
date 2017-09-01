@@ -69,7 +69,8 @@ const getAllDownloadUrls = (resultsArr) => {
                     const { download_url } = body;
                     downloadUrls.push({ name: repository.name, path, download_url });
                     logger.trace(`Found download url at address : ${download_url}`);
-                    return (resultsArr.length) ? getOneDownloadUrl(resultsArr) : resolve(downloadUrls)
+                    // return resolve(downloadUrls); // for faster testing...
+                    return (resultsArr.length) ? getOneDownloadUrl(resultsArr) : resolve(downloadUrls);
                 });
             }
         });
@@ -79,7 +80,7 @@ const getAllDownloadUrls = (resultsArr) => {
 };
 
 
-const downloadPackageJson = ({ name, path, download_url, }) => {
+const downloadPackageJson = ({ name, path: filePath, download_url, }) => {
 
     return new Promise((resolve, reject) => {
         logger.info(`request package json from download url : ${download_url}`)
@@ -93,7 +94,7 @@ const downloadPackageJson = ({ name, path, download_url, }) => {
 
         }, (err, res, body) => {
             if (err || res.statusCode !== 200) reject(err ? err : body);
-            const dst = path.resolve(`${__dirname}/../../packageJsons/${name}-${path.replace('/', '_')}.json`);
+            const dst = path.resolve(`${__dirname}/../../packageJsons/${name}-${filePath.replace(/\//g, '_')}`);
             fs.writeFileSync(dst, JSON.stringify(body, null, 4));
             logger.trace(`Downloaded package.json and wrote to destination : ${dst}`);
             resolve(body);
