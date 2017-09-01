@@ -12,7 +12,11 @@ Works on a per-organization basis : it doesn't search all of npm, just your orga
 - query dependent-tree for a given package
 - dependent-tree will output a pretty-printed tree describing all the places your package is installed
 
-## .env file : 
+## Setup : 
+
+As I mentioned above, you need to head to github and generate an oauth token for yourself : 
+https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
+Once you've done that, configure the following settings in your .env file :
 
 ```
 DEPENDENT_TREE_ORG=my_org
@@ -21,6 +25,11 @@ GIT_USER=its_me
 GIT_PW=something_secret
 LOG_LEVEL=info
 ```
+
+## Usage : 
+
+See below for setup
+
 
 ## log levels 
 

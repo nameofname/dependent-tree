@@ -1,6 +1,7 @@
 "use strict";
 
 require('dotenv').config();
+require('../src/lib/checkConfig')();
 const commander = require('commander');
 const logger = require('../src/lib/logger');
 const DependentTreeMap = require('../src/lib/DependentTreeMap');

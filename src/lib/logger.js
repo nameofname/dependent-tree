@@ -11,19 +11,19 @@ const getLevel = () => {
 
 const error = (...messages) => {
     const level = getLevel();
-    return level > -1 ? colorLog.error(messages) : noop();
+    return level > -1 ? colorLog.error(...messages) : noop();
 };
 const warn = (...messages) => {
     const level = getLevel();
-    return level > 0 ? colorLog.warn(messages) : noop();
+    return level > 0 ? colorLog.warn(...messages) : noop();
 };
 const info = (...messages) => {
     const level = getLevel();
-    return level > 1 ? colorLog.info(messages) : noop();
+    return level > 1 ? colorLog.info(...messages) : noop();
 };
 const trace = (...messages) => {
     const level = getLevel();
-    return level > 2 ? colorLog.info(messages) : noop();
+    return level > 2 ? colorLog.info(...messages) : noop();
 };
 
 module.exports = { error, warn, info, trace };
