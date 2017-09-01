@@ -5,7 +5,6 @@ const path = require('path');
 const fs = require('fs');
 const log = require('./logger');
 const assert = require('assert');
-const touchRepoDir = require('./touchRepoDir');
 
 
 class DependentLinkNode {
@@ -103,50 +102,50 @@ class DependentTreeMap {
         });
     }
 
-    _getRepoPath (folderArr) {
-        return path.resolve(`${touchRepoDir()}/${folderArr ? folderArr.join('/') : ''}`);
-    }
-
-    _findPackJsonInDir (dirPath) {
-        const jsonPath = `${dirPath}/package.json`;
-        let packageJson;
-
-        if (fs.existsSync(jsonPath)) {
-            try {
-                packageJson = require(jsonPath);
-
-                const {name, version} = packageJson;
-                this.packageStore[packageJson.name] = new PackageNode({
-                    name, version, packageJson
-                });
-                log.trace(`Successfully required package.json from ${jsonPath}`);
-            } catch (e) {
-                log.error(`package.json exists for ${dirPath} but could not be required`);
-            }
-        } else {
-            log.trace(`Skipping ${jsonPath}, no package.json found`);
-        }
-    }
+    // _getRepoPath (folderArr) {
+    //     return path.resolve(`${touchRepoDir()}/${folderArr ? folderArr.join('/') : ''}`);
+    // }
+    //
+    // _findPackJsonInDir (dirPath) {
+    //     const jsonPath = `${dirPath}/package.json`;
+    //     let packageJson;
+    //
+    //     if (fs.existsSync(jsonPath)) {
+    //         try {
+    //             packageJson = require(jsonPath);
+    //
+    //             const {name, version} = packageJson;
+    //             this.packageStore[packageJson.name] = new PackageNode({
+    //                 name, version, packageJson
+    //             });
+    //             log.trace(`Successfully required package.json from ${jsonPath}`);
+    //         } catch (e) {
+    //             log.error(`package.json exists for ${dirPath} but could not be required`);
+    //         }
+    //     } else {
+    //         log.trace(`Skipping ${jsonPath}, no package.json found`);
+    //     }
+    // }
 
     // TODO ! 
     _buildPackageStore() {
-        fs.readdirSync(this._getRepoPath())
-            .forEach(path => {
-                if (this.multiPackageProjects.includes(path)) {
-                    fs.readdirSync(this._getRepoPath([path]))
-                        .forEach(nestedPath => {
-                            const fullNestedPath = this._getRepoPath([path, nestedPath]);
-                            const isDir = fs.lstatSync(fullNestedPath).isDirectory();
-                            if (isDir) {
-                                this._findPackJsonInDir(fullNestedPath);
-                            }
-                        });
-                } else {
-                    let pathArr = [path];
-                    if (this.specialCases[path]) {
-                        pathArr.push(this.specialCases[path]);
-                    }
-                    this._findPackJsonInDir(this._getRepoPath(pathArr));
+        const packagesPath = path.resolve(`${__dirname}/../../packageJsons`);
+
+        fs.readdirSync(packagesPath)
+            .forEach(file => {
+                const jsonPath = path.resolve(`${packagesPath}/${file}`);
+                let packageJson;
+
+                try {
+                    packageJson = require(jsonPath);
+                    const {name, version} = packageJson;
+                    this.packageStore[name] = new PackageNode({
+                        name, version, packageJson
+                    });
+                    log.trace(`Successfully required package.json from ${jsonPath}`);
+
+                } catch (e) {
+                    log.error(`package.json exists for ${packagesPath} but could not be required`);
                 }
             });
 

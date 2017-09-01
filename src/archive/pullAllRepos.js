@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const log = require('color-log');
-const touchRepoDir = require('../lib/touchRepoDir');
+const touchRepoDir = require('touchRepoDir');
 const exec = require('../lib/exec');
 
 const pullThemAll = (repoDir) => {

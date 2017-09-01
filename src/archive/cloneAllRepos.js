@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const Git = require('nodegit');
 const repoBlackList = require('../config/repoBlackList.json'); // black list of repos not to clone
-const touchRepoDir = require('../lib/touchRepoDir');
+const touchRepoDir = require('touchRepoDir');
 const { cloneOptions, authCloneUrl } = require('../lib/gitCredentials');
 
 const requireRepoList = () => {
