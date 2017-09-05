@@ -14,6 +14,7 @@ const treePrinter = require('../src/lib/treePrinter');
 commander
     .option('-p, --package [value]', 'Package name to build dependent tree for')
     .option('-u, --update', 'Update packages')
+    .option('-j, --json', 'Print output in JSON format')
     .parse(process.argv);
 
 if (commander.update) {
@@ -38,7 +39,8 @@ if (commander.update) {
     }
 
     const treeMap = new DependentTreeMap();
+    const result = treeMap.getDependentTree(commander.package);
 
-    treePrinter(treeMap.getDependentTree(commander.package));
+    return (commander.json) ? console.log(JSON.stringify(result, null, 2)) : treePrinter(result);
 }
 
