@@ -1,6 +1,6 @@
 {
   "name": "dependent-tree",
-  "version": "0.0.3-beta",
+  "version": "0.0.4-beta",
   "main": "./scripts/buildDependentTree.js",
   "bin": {
     "dependent-tree": "./scripts/buildDependentTree.js"
