@@ -30,7 +30,6 @@ The .env file lives at the root of the dependent-tree project...
 ```
 DEPENDENT_TREE_ORG=my_org
 DEPENDENT_TREE_OAUTH=github_personal_access_token_goes_here
-GIT_USER=its_me
 LOG_LEVEL=info
 ```
 
