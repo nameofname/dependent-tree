@@ -1,9 +1,11 @@
 "use strict";
 
-require('dotenv').config();
+const path = require('path');
 const logger = require('./logger');
+const dotenvPath = path.resolve(__dirname, '../../.env');
+require('dotenv').config({ path: dotenvPath });
 
-const arr = ['DEPENDENT_TREE_ORG', 'DEPENDENT_TREE_OAUTH', 'GIT_USER', 'GIT_PW'];
+const arr = ['DEPENDENT_TREE_ORG', 'DEPENDENT_TREE_OAUTH', 'GIT_USER'];
 module.exports = () => {
     arr.forEach(confString => {
         if (!process.env[confString]) {
