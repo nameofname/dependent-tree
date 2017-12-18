@@ -1,5 +1,5 @@
 {
-  "name": "package_automator",
+  "name": "dependent-tree",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -22,10 +22,8 @@
   "scripts": {
     "start": "node ./src/app",
     "dev": "nodemon ./src/app",
-    "cleanRepos": "rm -rf ./repos/*",
+    "getPackageJsons": "node ./scripts/getPackageJsons.js",
     "updateRepoList": "node ./scripts/updateRepoList.js",
-    "cloneAllRepos": "node ./scripts/cloneAllRepos.js",
-    "pullAllRepos": "node ./scripts/pullAllRepos.js",
     "buildDependentTree": "node ./scripts/buildDependentTree.js"
   }
 }
