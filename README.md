@@ -61,3 +61,12 @@ Build the dependent tree for a given package. This will not work if you haven't 
 - trace
 
 Trace has the highest amount of output, it's actually handy for the update command and will show you every request being made.
+
+
+## To-do :
+
+- make it more clear what that version number is
+- make it more clear with a circular dependency is present. 
+- .env is using current working dir - pass the dir to dotenv() instead
+- update the readme - the GH pw and user name are both not required. 
+- remove the allRepos.json file.
